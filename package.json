@@ -1,0 +1,17 @@
+{
+  "name": "twow-bg-announcer-bot",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Fabio Pineda",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun --watch run index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "puppeteer": "^24.10.1"
+  }
+}
