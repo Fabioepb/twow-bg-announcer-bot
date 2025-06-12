@@ -34,7 +34,15 @@ const scrapeBgName = async () => {
     return bgName;
 }
 
-let startingBgName = "..."
+let startingBgName = ""
+
+try{
+    startingBgName = await scrapeBgName();
+} catch (error) {
+    console.error("Error scraping BG name: " + error);
+}
+
+
 console.log(`Starting BG name: ${startingBgName}`);
 
 const bot = new Bot(process.env.TG_BOT_API_TOKEN!);
@@ -43,12 +51,18 @@ const bot = new Bot(process.env.TG_BOT_API_TOKEN!);
 bot.on('message:new_chat_members', async (ctx) => {
     if (ctx.message.new_chat_members.some(member => member.id === ctx.me.id)) {
         activeChats.add(ctx.chat.id.toString());
-        await ctx.reply('🐢 Thanks for adding me! I will now send battleground updates to this group.');
+        await ctx.reply('🐢 Thanks for adding me! I will now send battleground updates to this group. \n\n /twow to start the bot if you haven\'t already. \n\n /bg to get the current BG of the day. \n\n /twow unsubscribe to unsubscribe from the bot.');
     }
 });
 
 bot.command("twow", (ctx) => {
-    ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day.")
+    // if the msg includes "unsubscribe" then remove the chat from the activeChats
+    if (ctx.msg.text?.includes("unsubscribe")) {
+        activeChats.delete(ctx.chat.id.toString());
+        ctx.reply("You have been unsubscribed from the Turtle WoW Battleground Bot. \n\n /twow to start the bot if you haven't already. \n\n /bg to get the current BG of the day.");
+        return;
+    }
+    ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day. \n\n /bg to get the current BG of the day. \n\n /twow to start the bot if you haven't already. \n\n /twow unsubscribe to unsubscribe from the bot.")
     activeChats.add(ctx.chat.id.toString());
 });
 
@@ -70,7 +84,7 @@ const cronJob = CronJob.schedule('*/10 * * * *', async () => {
             // Send message to all active chats
             for (const chatId of activeChats) {
                 try {
-                    await bot.api.sendMessage(chatId, `🐢 *Turtle WoW BG Update* 🐢\n\n⚔️ *New Battleground of the Day:*\n🏰 ${bgName}\n\n_May the Horde/Alliance prevail!_ 🛡️`);
+                    await bot.api.sendMessage(chatId, `🐢 *Turtle WoW BG Update* 🐢\n\n⚔️ *New Battleground of the Day:*\n🏰 ${bgName}\n\n_May the Horde/Alliance prevail!_ 🛡️\n\n/twow to start the bot if you haven't already. \n\n /bg to get the current BG of the day. \n\n /twow unsubscribe to unsubscribe from the bot.`);
                 } catch (error) {
                     console.error(`Failed to send message to chat ${chatId}:`, error);
                 }
