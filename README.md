@@ -48,7 +48,6 @@ cp .env_example .env
 4. Edit the `.env` file and add your credentials:
 ```
 TG_BOT_API_TOKEN=your_bot_token_here
-TG_USER_ID=your_telegram_user_id
 ```
 
 ## Running the Bot
