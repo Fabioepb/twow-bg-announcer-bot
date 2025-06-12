@@ -47,7 +47,7 @@ bot.on('message:new_chat_members', async (ctx) => {
     }
 });
 
-bot.command("start", (ctx) => {
+bot.command("twow", (ctx) => {
     ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day.")
     activeChats.add(ctx.chat.id.toString());
 });
@@ -61,7 +61,7 @@ bot.on('message:left_chat_member', async (ctx) => {
 
 bot.command('bg', (ctx) => ctx.reply(`🐢 *Turtle WoW BG Info* 🐢\n\n⚔️ *Current Battleground of the Day:*\n🏰 ${startingBgName}\n\n_May the Horde/Alliance prevail!_ 🛡️`));
 
-const cronJob = CronJob.schedule('*/15 * * * *', async () => {
+const cronJob = CronJob.schedule('*/10 * * * *', async () => {
     try {
         const bgName = await scrapeBgName();
         if (bgName !== startingBgName) {
