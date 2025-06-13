@@ -36,7 +36,7 @@ const scrapeBgName = async () => {
 
 let startingBgName = ""
 
-try{
+try {
     startingBgName = await scrapeBgName();
 } catch (error) {
     console.error("Error scraping BG name: " + error);
@@ -62,7 +62,10 @@ bot.command("twow", (ctx) => {
         ctx.reply("You have been unsubscribed from the Turtle WoW Battleground Bot. \n\n /twow to start the bot if you haven't already. \n\n /bg to get the current BG of the day.");
         return;
     }
-    ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day. \n\n /bg to get the current BG of the day. \n\n /twow to start the bot if you haven't already. \n\n /twow unsubscribe to unsubscribe from the bot.")
+
+    if (!activeChats.has(ctx.chat.id.toString())) {
+        ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day. \n\n /bg to get the current BG of the day. \n\n /twow to start the bot if you haven't already. \n\n /twow unsubscribe to unsubscribe from the bot.")
+    }
     activeChats.add(ctx.chat.id.toString());
 });
 
