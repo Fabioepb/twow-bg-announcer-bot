@@ -3,9 +3,29 @@ dotenv.config();
 import CronJob from 'node-cron';
 import puppeteer from 'puppeteer';
 import { Bot } from 'grammy';
+import fs from 'fs/promises';
+import path from 'path';
 
-// Store chat IDs where the bot is active
-const activeChats = new Set<string>();
+const SUBSCRIPTIONS_FILE = 'active_chats.json';
+
+// Load saved chat IDs from file
+let activeChats = new Set<string>();
+try {
+    const savedChats = await fs.readFile(SUBSCRIPTIONS_FILE, 'utf-8');
+    activeChats = new Set(JSON.parse(savedChats));
+    console.log(`Loaded ${activeChats.size} active chats from file`);
+} catch (error) {
+    console.log('No saved chats found, starting with empty set');
+}
+
+// Function to save activeChats to file
+const saveActiveChats = async () => {
+    try {
+        await fs.writeFile(SUBSCRIPTIONS_FILE, JSON.stringify([...activeChats]));
+    } catch (error) {
+        console.error('Error saving active chats:', error);
+    }
+};
 
 const scrapeBgName = async () => {
     console.log("Starting scraper...");
@@ -51,14 +71,16 @@ const bot = new Bot(process.env.TG_BOT_API_TOKEN!);
 bot.on('message:new_chat_members', async (ctx) => {
     if (ctx.message.new_chat_members.some(member => member.id === ctx.me.id)) {
         activeChats.add(ctx.chat.id.toString());
+        await saveActiveChats();
         await ctx.reply('🐢 Thanks for adding me! I will now send battleground updates to this group. \n\n /twow to start the bot if you haven\'t already. \n\n /bg to get the current BG of the day. \n\n /twow unsubscribe to unsubscribe from the bot.');
     }
 });
 
-bot.command("twow", (ctx) => {
+bot.command("twow", async (ctx) => {
     // if the msg includes "unsubscribe" then remove the chat from the activeChats
     if (ctx.msg.text?.includes("unsubscribe")) {
         activeChats.delete(ctx.chat.id.toString());
+        await saveActiveChats();
         ctx.reply("You have been unsubscribed from the Turtle WoW Battleground Bot. \n\n /twow to start the bot if you haven't already. \n\n /bg to get the current BG of the day.");
         return;
     }
@@ -67,12 +89,14 @@ bot.command("twow", (ctx) => {
         ctx.reply("Hello! I am the Turtle WoW Battleground Bot. I will send you updates on the Battleground of the Day. \n\n /bg to get the current BG of the day. \n\n /twow to start the bot if you haven't already. \n\n /twow unsubscribe to unsubscribe from the bot.")
     }
     activeChats.add(ctx.chat.id.toString());
+    await saveActiveChats();
 });
 
 // Remove chat ID when bot is removed from a group
 bot.on('message:left_chat_member', async (ctx) => {
     if (ctx.message.left_chat_member.id === ctx.me.id) {
         activeChats.delete(ctx.chat.id.toString());
+        await saveActiveChats();
     }
 });
 
