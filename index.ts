@@ -4,7 +4,6 @@ import CronJob from 'node-cron';
 import puppeteer from 'puppeteer';
 import { Bot } from 'grammy';
 import fs from 'fs/promises';
-import path from 'path';
 
 const SUBSCRIPTIONS_FILE = 'active_chats.json';
 
