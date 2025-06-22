@@ -71,7 +71,7 @@ bot.on('message:new_chat_members', async (ctx) => {
     if (ctx.message.new_chat_members.some(member => member.id === ctx.me.id)) {
         activeChats.add(ctx.chat.id.toString());
         await saveActiveChats();
-        await ctx.reply('🐢 *Thanks for adding me!* I will now send battleground updates to this group.\n\n`/twow` to start the bot if you haven\'t already.\n\n`/bg` to get the current BG of the day.\n\n`/twow unsubscribe` to unsubscribe from the bot.', { parse_mode: "MarkdownV2" });
+        await ctx.reply('🐢 *Thanks for adding me\\!* I will now send battleground updates to this group.\n\n`/twow` to start the bot if you haven\'t already.\n\n`/bg` to get the current BG of the day.\n\n`/twow unsubscribe` to unsubscribe from the bot.', { parse_mode: "MarkdownV2" });
     }
 });
 
